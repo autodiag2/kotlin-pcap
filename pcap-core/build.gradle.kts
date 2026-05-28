@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.github.autodiag2"
-version = "1.0.0"
+version = property("VERSION_NAME") as String
 
 kotlin {
     jvm()
