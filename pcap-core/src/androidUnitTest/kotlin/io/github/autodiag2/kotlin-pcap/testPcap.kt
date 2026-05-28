@@ -620,4 +620,355 @@ class PcapTest {
             bytes.size > 40
         )
     }
+
+    @Test
+    fun testIPv4ChecksumChanges() {
+
+        val ipv4a = IPv4(
+            sourceIp = byteArrayOf(
+                1,
+                1,
+                1,
+                1
+            ),
+            destinationIp = byteArrayOf(
+                8,
+                8,
+                8,
+                8
+            ),
+            protocol = 17,
+            ttl = 64,
+            payload = UDP(
+                sourcePort = 1,
+                destinationPort = 2,
+                payload = byteArrayOf(
+                    0x10
+                )
+            )
+        )
+
+        val ipv4b = IPv4(
+            sourceIp = byteArrayOf(
+                1,
+                1,
+                1,
+                1
+            ),
+            destinationIp = byteArrayOf(
+                8,
+                8,
+                8,
+                8
+            ),
+            protocol = 17,
+            ttl = 128,
+            payload = UDP(
+                sourcePort = 1,
+                destinationPort = 2,
+                payload = byteArrayOf(
+                    0x10
+                )
+            )
+        )
+
+        val a = ipv4a.serialize()
+        val b = ipv4b.serialize()
+
+        assertTrue(
+            a[10] != b[10] ||
+            a[11] != b[11]
+        )
+    }
+
+    @Test
+    fun testEthernetMacSerialization() {
+
+        val ethernet = Ethernet(
+            destinationMac = byteArrayOf(
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ),
+            sourceMac = byteArrayOf(
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ),
+            etherType = 0x0800
+        )
+
+        val bytes = ethernet.serialize()
+
+        assertEquals(1, bytes[0].toInt() and 0xFF)
+        assertEquals(6, bytes[5].toInt() and 0xFF)
+
+        assertEquals(10, bytes[6].toInt() and 0xFF)
+        assertEquals(15, bytes[11].toInt() and 0xFF)
+    }
+
+    @Test
+    fun testUdpLengthField() {
+
+        val udp = UDP(
+            sourcePort = 1,
+            destinationPort = 2,
+            payload = ByteArray(100)
+        )
+
+        val bytes = udp.serialize()
+
+        val length = (
+            (bytes[4].toInt() and 0xFF) shl 8
+        ) or (
+            bytes[5].toInt() and 0xFF
+        )
+
+        assertEquals(
+            108,
+            length
+        )
+    }
+
+    @Test
+    fun testTcpDataOffsetField() {
+
+        val tcp = TCP(
+            sourcePort = 1,
+            destinationPort = 2,
+            payload = byteArrayOf(
+                0x01
+            )
+        )
+
+        val bytes = tcp.serialize()
+
+        val dataOffset = (
+            bytes[12].toInt() shr 4
+        ) and 0x0F
+
+        assertEquals(
+            5,
+            dataOffset
+        )
+    }
+
+    @Test
+    fun testSerializeEmptyUDP() {
+
+        val udp = UDP(
+            sourcePort = 10,
+            destinationPort = 20,
+            payload = ByteArray(0)
+        )
+
+        val bytes = udp.serialize()
+
+        assertEquals(
+            8,
+            bytes.size
+        )
+    }
+
+    @Test
+    fun testSerializeEmptyTCPPayload() {
+
+        val tcp = TCP(
+            sourcePort = 123,
+            destinationPort = 80,
+            payload = ByteArray(0)
+        )
+
+        val bytes = tcp.serialize()
+
+        assertEquals(
+            20,
+            bytes.size
+        )
+    }
+
+    @Test
+    fun testSerializeIPv4WithoutPayload() {
+
+        val ipv4 = IPv4(
+            sourceIp = byteArrayOf(
+                127,
+                0,
+                0,
+                1
+            ),
+            destinationIp = byteArrayOf(
+                127,
+                0,
+                0,
+                1
+            ),
+            protocol = 1
+        )
+
+        val bytes = ipv4.serialize()
+
+        assertEquals(
+            20,
+            bytes.size
+        )
+    }
+
+    @Test
+    fun testPcapPacketRoundtripWithEthernet() {
+
+        val ethernet = Ethernet(
+            destinationMac = byteArrayOf(
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ),
+            sourceMac = byteArrayOf(
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+            ),
+            etherType = 0x0800,
+            payload = IPv4(
+                sourceIp = byteArrayOf(
+                    192.toByte(),
+                    168.toByte(),
+                    1,
+                    1
+                ),
+                destinationIp = byteArrayOf(
+                    8,
+                    8,
+                    8,
+                    8
+                ),
+                protocol = 6,
+                payload = TCP(
+                    sourcePort = 5555,
+                    destinationPort = 80,
+                    payload = "abc".encodeToByteArray()
+                )
+            )
+        )
+
+        val serialized = ethernet.serialize()
+
+        val output = ByteArrayOutputStream()
+
+        PcapWriter(
+            output,
+            PcapUtil.createMicroHeader(
+                network = PcapLinkType.ETHERNET
+            )
+        ).use { writer ->
+
+            writer.writePacket(
+                timestampSeconds = 1,
+                timestampSubseconds = 0,
+                payload = serialized
+            )
+        }
+
+        val reader = PcapReader.fromInputStream(
+            ByteArrayInputStream(
+                output.toByteArray()
+            )
+        )
+
+        val packet = reader.readPacket()
+
+        assertNotNull(packet)
+
+        assertContentEquals(
+            serialized,
+            packet.payload
+        )
+    }
+
+    @Test
+    fun testReadMultipleLargePackets() {
+
+        val output = ByteArrayOutputStream()
+
+        val payload = ByteArray(65535) {
+            (it and 0xFF).toByte()
+        }
+
+        PcapWriter(
+            output,
+            PcapUtil.createMicroHeader(
+                snapLen = payload.size
+            )
+        ).use { writer ->
+
+            for (i in 0 until 5) {
+                writer.writePacket(
+                    timestampSeconds = i.toLong(),
+                    timestampSubseconds = 0,
+                    payload = payload
+                )
+            }
+        }
+
+        val packets = PcapReader
+            .fromInputStream(
+                ByteArrayInputStream(
+                    output.toByteArray()
+                )
+            )
+            .readAll()
+
+        assertEquals(
+            5,
+            packets.size
+        )
+
+        for (packet in packets) {
+            assertEquals(
+                payload.size,
+                packet.payload.size
+            )
+        }
+    }
+
+    @Test
+    fun testHexLowerUpperConsistency() {
+
+        val data = byteArrayOf(
+            0x0A,
+            0x0B,
+            0x0C
+        )
+
+        val hex = PcapUtil.hex(data)
+
+        assertEquals(
+            "0A0B0C",
+            hex
+        )
+
+        assertContentEquals(
+            data,
+            PcapUtil.parseHex(hex)
+        )
+
+        assertContentEquals(
+            data,
+            PcapUtil.parseHex(
+                hex.lowercase()
+            )
+        )
+    }
 }
