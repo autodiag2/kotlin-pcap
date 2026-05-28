@@ -1,6 +1,5 @@
 plugins {
-    kotlin("android")
-    id("com.android.library")
+    kotlin("jvm")
     id("maven-publish")
 }
 
@@ -15,35 +14,13 @@ kotlin {
     jvmToolchain(21)
 }
 
-android {
-    namespace = "pcap.core"
-
-    compileSdk = 36
-
-    defaultConfig {
-        minSdk = 24
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-        }
-    }
-}
-
-afterEvaluate { 
-    publishing { 
-        publications { 
-            create<MavenPublication>("release") { 
-                from(components["release"])
-                groupId = "com.github.autodiag2" 
-                artifactId = "kotlin-pcap"
-                version = project.version.toString() 
-             } 
-         } 
-     } 
+publishing {
+    publications { 
+        create<MavenPublication>("maven") { 
+            from(components["java"]) 
+            groupId = project.group.toString() 
+            artifactId = "kotlin-pcap" 
+            version = project.version.toString() 
+        } 
+    } 
 }
