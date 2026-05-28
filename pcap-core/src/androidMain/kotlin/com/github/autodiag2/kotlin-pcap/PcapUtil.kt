@@ -1,4 +1,4 @@
-package io.github.autodiag2.kotlin.pcap
+package com.github.autodiag2.kotlin.pcap
 
 import kotlin.math.min
 

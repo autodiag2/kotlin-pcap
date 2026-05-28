@@ -1,9 +1,9 @@
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
-package io.github.autodiag2.kotlin.pcap
+package com.github.autodiag2.kotlin.pcap
 
 import java.nio.ByteOrder
-import io.github.autodiag2.kotlin.pcap.packet.Packet
+import com.github.autodiag2.kotlin.pcap.packet.Packet
 
 enum class PcapByteOrder {
     BIG_ENDIAN,

@@ -1,4 +1,4 @@
-package io.github.autodiag2.kotlin.pcap
+package com.github.autodiag2.kotlin.pcap
 
 import java.io.BufferedInputStream
 import java.io.Closeable

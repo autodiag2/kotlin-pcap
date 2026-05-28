@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
 }
 
-group = "io.github.autodiag2"
+group = "com.github.autodiag2"
 version = "1.0.0"
 
 kotlin {

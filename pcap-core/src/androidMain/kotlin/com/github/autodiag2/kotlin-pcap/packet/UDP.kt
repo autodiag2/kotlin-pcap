@@ -1,4 +1,4 @@
-package io.github.autodiag2.kotlin.pcap.packet
+package com.github.autodiag2.kotlin.pcap.packet
 
 class UDP(
     var sourcePort: Int,

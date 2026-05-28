@@ -1,4 +1,4 @@
-package io.github.autodiag2.kotlin.pcap
+package com.github.autodiag2.kotlin.pcap
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -9,11 +9,11 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import io.github.autodiag2.kotlin.pcap.packet.Ethernet
-import io.github.autodiag2.kotlin.pcap.packet.IPv4
-import io.github.autodiag2.kotlin.pcap.packet.Packet
-import io.github.autodiag2.kotlin.pcap.packet.TCP
-import io.github.autodiag2.kotlin.pcap.packet.UDP
+import com.github.autodiag2.kotlin.pcap.packet.Ethernet
+import com.github.autodiag2.kotlin.pcap.packet.IPv4
+import com.github.autodiag2.kotlin.pcap.packet.Packet
+import com.github.autodiag2.kotlin.pcap.packet.TCP
+import com.github.autodiag2.kotlin.pcap.packet.UDP
 
 class PcapTest {
 
