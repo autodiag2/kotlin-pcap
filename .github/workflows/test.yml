@@ -1,6 +1,3 @@
-`.github/workflows/test.yml`
-
-```yaml
 name: test
 
 on:
@@ -33,4 +30,3 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
-```
