@@ -42,10 +42,16 @@ class PcapWriter(
     }
 
     private fun writeGlobalHeader() {
-        val bb = ByteBuffer.allocate(24)
+        output.write(
+            ByteBuffer.allocate(4)
+                .order(ByteOrder.BIG_ENDIAN)
+                .putInt(globalHeader.magic)
+                .array()
+        )
+
+        val bb = ByteBuffer.allocate(20)
             .order(order)
 
-        bb.putInt(globalHeader.magic)
         bb.putShort(globalHeader.versionMajor.toShort())
         bb.putShort(globalHeader.versionMinor.toShort())
         bb.putInt(globalHeader.thisZone)
