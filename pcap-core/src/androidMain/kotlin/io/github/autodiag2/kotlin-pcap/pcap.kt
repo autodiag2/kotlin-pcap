@@ -593,34 +593,3 @@ object PcapUtil {
         return payload.copyOf(min(payload.size, snapLen))
     }
 }
-
-fun main() {
-    val file = File("sample.pcap")
-
-    val header = PcapUtil.createMicroHeader(
-        byteOrder = PcapByteOrder.LITTLE_ENDIAN,
-        network = PcapLinkType.ETHERNET
-    )
-
-    PcapWriter.toFile(file, header).use { writer ->
-        writer.writePacket(
-            timestampSeconds = System.currentTimeMillis() / 1000L,
-            timestampSubseconds = 0,
-            payload = byteArrayOf(
-                0x01,
-                0x02,
-                0x03,
-                0x04
-            )
-        )
-    }
-
-    PcapReader.fromFile(file).use { reader ->
-        println(reader.globalHeader)
-
-        for (packet in reader) {
-            println(packet.header)
-            println(PcapUtil.hex(packet.payload))
-        }
-    }
-}
