@@ -3,6 +3,7 @@
 package io.github.autodiag2.kotlin.pcap
 
 import java.nio.ByteOrder
+import io.github.autodiag2.kotlin.pcap.packet.Packet
 
 enum class PcapByteOrder {
     BIG_ENDIAN,
@@ -150,4 +151,19 @@ data class PcapPacketHeader(
 data class PcapPacket(
     val header: PcapPacketHeader,
     val payload: ByteArray
-)
+) {
+
+    companion object {
+
+        fun fromPacket(
+            header: PcapPacketHeader,
+            packet: Packet
+        ): PcapPacket {
+
+            return PcapPacket(
+                header = header,
+                payload = packet.serialize()
+            )
+        }
+    }
+}
