@@ -24,20 +24,12 @@ dependencyResolutionManagement {
 ```kotlin
 dependencies {
     implementation(
-        "com.github.autodiag2.kotlin-pcap:pcap-core:1.0.0"
+        "com.github.autodiag2:kotlin-pcap:v1.0.5"
     )
 }
 ```
 
-## Using latest development version
-
-```kotlin
-dependencies {
-    implementation(
-        "com.github.autodiag2.kotlin-pcap:pcap-core:master-SNAPSHOT"
-    )
-}
-```
+See [demo](https://github.com/autodiag2/kotlin-pcap-demo/)
 
 ## From sources
 
