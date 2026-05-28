@@ -3,12 +3,12 @@ package io.github.autodiag2.kotlin.pcap.packet
 class UDP(
     var sourcePort: Int,
     var destinationPort: Int,
-    var payloadData: ByteArray
+    var payload: ByteArray
 ) : Packet() {
 
     override fun serialize(): ByteArray {
 
-        val length = 8 + payloadData.size
+        val length = 8 + payload.size
 
         val out = ByteArray(length)
 
@@ -22,11 +22,11 @@ class UDP(
         out[5] = length.toByte()
 
         System.arraycopy(
-            payloadData,
+            payload,
             0,
             out,
             8,
-            payloadData.size
+            payload.size
         )
 
         return out

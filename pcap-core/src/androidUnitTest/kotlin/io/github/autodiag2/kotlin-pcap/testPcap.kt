@@ -336,7 +336,7 @@ class PcapTest {
         val udp = UDP(
             sourcePort = 1234,
             destinationPort = 5678,
-            payloadData = byteArrayOf(
+            payload = byteArrayOf(
                 0x01,
                 0x02,
                 0x03
@@ -379,7 +379,7 @@ class PcapTest {
             destinationPort = 80,
             sequenceNumber = 1,
             acknowledgmentNumber = 2,
-            payloadData = "hello".encodeToByteArray()
+            payload = "hello".encodeToByteArray()
         )
 
         val bytes = tcp.serialize()
@@ -416,7 +416,7 @@ class PcapTest {
         val udp = UDP(
             sourcePort = 1111,
             destinationPort = 2222,
-            payloadData = byteArrayOf(
+            payload = byteArrayOf(
                 0x55,
                 0x66
             )
@@ -505,7 +505,7 @@ class PcapTest {
                 payload = UDP(
                     sourcePort = 1,
                     destinationPort = 2,
-                    payloadData = byteArrayOf(
+                    payload = byteArrayOf(
                         0x10,
                         0x20
                     )
@@ -536,7 +536,7 @@ class PcapTest {
         val udp = UDP(
             sourcePort = 100,
             destinationPort = 200,
-            payloadData = byteArrayOf(
+            payload = byteArrayOf(
                 0x01,
                 0x02
             )
@@ -569,7 +569,7 @@ class PcapTest {
         val tcp = TCP(
             sourcePort = 5555,
             destinationPort = 80,
-            payloadData = "GET".encodeToByteArray()
+            payload = "GET".encodeToByteArray()
         )
 
         val ipv4 = IPv4(

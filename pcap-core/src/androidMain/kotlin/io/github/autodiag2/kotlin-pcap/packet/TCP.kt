@@ -7,7 +7,7 @@ class TCP(
     var acknowledgmentNumber: Long = 0,
     var flags: Int = 0x18,
     var windowSize: Int = 65535,
-    var payloadData: ByteArray = ByteArray(0)
+    var payload: ByteArray = ByteArray(0)
 ) : Packet() {
 
     override fun serialize(): ByteArray {
@@ -16,7 +16,7 @@ class TCP(
         val headerLength = dataOffset * 4
 
         val out = ByteArray(
-            headerLength + payloadData.size
+            headerLength + payload.size
         )
 
         out[0] = (sourcePort shr 8).toByte()
@@ -42,11 +42,11 @@ class TCP(
         out[15] = windowSize.toByte()
 
         System.arraycopy(
-            payloadData,
+            payload,
             0,
             out,
             headerLength,
-            payloadData.size
+            payload.size
         )
 
         return out
