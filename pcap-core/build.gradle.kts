@@ -12,13 +12,6 @@ kotlin {
 
     androidTarget()
 
-    iosArm64()
-    iosSimulatorArm64()
-
-    linuxX64()
-    macosArm64()
-    mingwX64()
-
     js(IR) {
         browser()
         nodejs()
